@@ -32,4 +32,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/dedicateddev/simd:${{ steps.timestamp.outputs.timestamp }}
+          tags: ghcr.io/simd:${{ steps.timestamp.outputs.timestamp }}
