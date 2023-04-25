@@ -8,8 +8,6 @@ RUN apt-get install git -y
 COPY . .
 RUN curl https://get.ignite.com/cli | bash
 RUN make build
-RUN make docs
-
 FROM golang:1.19.4-bullseye
 
 RUN apt-get update -y
