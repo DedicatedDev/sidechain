@@ -8,6 +8,7 @@ RUN apt-get install git -y
 COPY . .
 
 RUN make build
+RUN make docs
 
 FROM golang:1.19.4-bullseye
 
