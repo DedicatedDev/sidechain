@@ -296,6 +296,7 @@ docs:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
+	chmod +x ./scripts/generate-docs.sh
 	./scripts/generate-docs.sh
 
 	statik -src=./docs/static -dest=client/docs -f -m

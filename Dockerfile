@@ -6,7 +6,7 @@ RUN apt-get update -y
 RUN apt-get install git -y
 
 COPY . .
-
+RUN curl https://get.ignite.com/cli | bash
 RUN make build
 RUN make docs
 

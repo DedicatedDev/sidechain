@@ -1,57 +1,30 @@
-name: Compile Side
+#!/usr/bin/env bash
 
-on:
-  pull_request:
-  push:
-    branches:
-      - dev
-  workflow_dispatch:
+set -eo pipefail
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64]
-        targetos: [darwin, linux]
-        include:
-          - targetos: darwin
-            arch: arm64
-    name: side ${{ matrix.arch }} for ${{ matrix.targetos }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Get git diff
-        uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.wasm
-            **/**!(test).go
-            go.mod
-            go.sum
-            Makefile
-      - uses: actions/setup-go@v2.1.4
-        with:
-          go-version: '^1.19'
-        env:
-          GOOS: ${{ matrix.targetos }}
-          GOARCH: ${{ matrix.arch }}
-        if: env.GIT_DIFF
+# Run ignite generate openapi command
+ignite generate openapi -y
 
-      - name: Compile sidechain
-        run: |
-          go mod download
-          cd cmd/sidechaind
-          GOWRK=off go build .
-        if: env.GIT_DIFF
+# Convert openapi.yml to swagger.yml
+awk '
+  /^openapi:/ { print "swagger: '\''2.0'\''"; next }
+  1
+' ./docs/static/openapi.yml > ./client/docs/swagger-ui/swagger.yaml
 
-      - name: Run generate-docs script
-        run: |
-          chmod +x ./scripts/generate-docs.sh
-          ./scripts/generate-docs.sh
-        if: env.GIT_DIFF
+# Determine the platform and set the appropriate sed command
+if [[ "$(uname)" == "Darwin" ]]; then
+    SEDCMD="gsed"
+else
+    SEDCMD="sed"
+fi
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: sidechaind ${{ matrix.targetos }} ${{ matrix.arch }}
-          path: cmd/sidechaind/sidechaind
-        if: env.GIT_DIFF
+# Update the fields
+$SEDCMD -i 's/^\(  title: \).*$/\1Sidechain Chain - gRPC Gateway docs/' ./client/docs/swagger-ui/swagger.yaml
+$SEDCMD -i 's/^\(  description: \).*$/\1A REST interface for state queries and transactions/' ./client/docs/swagger-ui/swagger.yaml
+
+# Remove the existing version field
+$SEDCMD -i '/^  version: /d' ./client/docs/swagger-ui/swagger.yaml
+
+# Add the version field after the description field
+$SEDCMD -i '/^\(  description: \).*$/a\
+  version: 1.0.0' ./client/docs/swagger-ui/swagger.yaml
