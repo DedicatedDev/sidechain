@@ -1,5 +1,7 @@
 name: Compile Side
 
+# Controls when the action will run.
+#  This workflow runr on pushes to master & every Pull Requests. (Or when manually triggered)
 on:
   pull_request:
   push:
@@ -7,6 +9,7 @@ on:
       - dev
   workflow_dispatch:
 
+# This workflow makes x86_64 binaries for mac, windows, and linux.
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,6 +20,9 @@ jobs:
         include:
           - targetos: darwin
             arch: arm64
+#        include:
+#          - targetos: windows
+#            arch: amd64
     name: side ${{ matrix.arch }} for ${{ matrix.targetos }}
     steps:
       - uses: actions/checkout@v2
@@ -42,12 +48,6 @@ jobs:
           go mod download
           cd cmd/sidechaind
           GOWRK=off go build .
-        if: env.GIT_DIFF
-
-      - name: Run generate-docs script
-        run: |
-          chmod +x ./scripts/generate-docs.sh
-          ./scripts/generate-docs.sh
         if: env.GIT_DIFF
 
       - uses: actions/upload-artifact@v2
