@@ -32,4 +32,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/testchain/my-image-name:${{ steps.timestamp.outputs.timestamp }}
+          tags: ghcr.io/testchain/sidechaind:${{ steps.timestamp.outputs.timestamp }}
