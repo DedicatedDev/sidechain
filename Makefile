@@ -535,8 +535,11 @@ localnet-build:
 
 # Start a 4-node testnet locally
 localnet-start: localnet-stop localnet-build
-	@if ! [ -f build/node0/$(SIDECHAIN_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/sidechain:Z sidechain/node "./sidechaind testnet init-files --v 4 -o /sidechain --keyring-backend=test --starting-ip-address 192.167.10.2"; fi
+	@if ! [ -f build/node0/$(SIDECHAIN_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/sidechain:Z sidechain/node "./sidechaind testnet init-files --v 1 -o /sidechain --keyring-backend=test --starting-ip-address 192.167.10.2"; fi
 	docker-compose up -d
+
+
+
 
 # Stop testnet
 localnet-stop:
