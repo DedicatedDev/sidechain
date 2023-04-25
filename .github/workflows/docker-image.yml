@@ -32,4 +32,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/my-image-name:${{ steps.timestamp.outputs.timestamp }}
+          tags: ghcr.io/${{ github.repository_owner }}/test:${{ steps.timestamp.outputs.timestamp }}
