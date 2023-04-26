@@ -27,11 +27,6 @@ jobs:
         id: timestamp
         run: echo "::set-output name=timestamp::$(date +%s)"
 
-      - name: Generate Genesis File
-        run: |
-          docker run --rm -v $(pwd)/build:/sidechain:Z sidechain/node "./sidechaind testnet init --chain-id sidechain-testnet-1 --home /sidechain"
-        working-directory: .
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
